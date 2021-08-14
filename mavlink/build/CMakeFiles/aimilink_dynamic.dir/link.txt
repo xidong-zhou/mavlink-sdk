@@ -1,0 +1,1 @@
+/usr/bin/c++ -fPIC   -shared -Wl,-soname,libaimilink.so.1 -o lib/libaimilink.so.1.1 CMakeFiles/aimilink_dynamic.dir/src/linux_serial.cpp.o CMakeFiles/aimilink_dynamic.dir/src/mavlink_interface.cpp.o  -lpthread 

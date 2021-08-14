@@ -1,0 +1,4 @@
+/home/zxd/mavlink/build/CMakeFiles/rebuild_cache.dir
+/home/zxd/mavlink/build/CMakeFiles/edit_cache.dir
+/home/zxd/mavlink/build/CMakeFiles/aimilink_static.dir
+/home/zxd/mavlink/build/CMakeFiles/aimilink_dynamic.dir

@@ -1,0 +1,355 @@
+<?xml version="1.0"?>
+<!-- aimirobot xml file for mavlink -->
+<mavlink>
+  <version>3</version>
+  <dialect>0</dialect>
+
+  <!-- ========================================================= -->
+  <!-- enums -->
+  <!-- ========================================================= -->
+  <enums>
+    <!-- robot robot type -->
+    <enum name="AMB_TYPE">
+      <description>Autonomous mobile robot type enum classes. This identifies the robot type model.</description>
+      <entry value="0" name="AMB_TYPE_DIFFERENTIAL">
+        <description>Differential drive mobile robot.</description>
+      </entry>
+      <entry value="1" name="AMB_TYPE_OMNIDIRECTIONAL">
+        <description>Omnidirectional drive mobile robot.</description>
+      </entry>
+      <entry value="2" name="AMB_TYPE_ACKERMANN">
+        <description>Ackerman drive mobile robot, like car.</description>
+      </entry>
+    </enum>
+    <!-- robot system base mode -->
+    <enum name="AMB_MODE_FLAG" bitmask="true">
+      <description>These flags encode the AMR mode.</description>
+      <entry value="0" name="AMB_MODE_FLAG_DISARMED">
+        <description>0b00000000 AMB set to disarmed. Motors are disenabled.</description>
+      </entry>
+      <entry value="1" name="AMB_MODE_FLAG_ARMED">
+        <description>0b00000001 AMB set to armed. Motors are enabled / running / can start. Ready to Move.</description>
+      </entry>
+      <entry value="2" name="AMB_MODE_FLAG_TORQUE_MODE_ENABLED">
+        <description>0b00000010 AMB set to torque(current) control mode.</description>
+      </entry>
+      <entry value="4" name="AMB_MODE_FLAG_SPEED_MODE_ENABLED">
+        <description>0b00000100 AMB set to speed control mode.</description>
+      </entry>
+    </enum>
+    <!-- robot system state -->
+    <enum name="AMB_STATE">
+      <description>These flags encode the AMR status.</description>
+      <entry value="0" name="AMB_STATE_UNINIT">
+        <description>Uninitialized system, state is unknown.</description>
+      </entry>
+      <entry value="1" name="AMB_STATE_BOOTING">
+        <description>System is booting up.</description>
+      </entry>
+      <entry value="2" name="AMB_STATE_CALIBRATING">
+        <description>System is calibrating and not move ready.</description>
+      </entry>
+      <entry value="3" name="AMB_STATE_STANDBY">
+        <description>System is on standby. It can be move any time.</description>
+      </entry>
+      <entry value="4" name="AMB_STATE_ACTIVE">
+        <description>System is active and moving. Motors are engaged.</description>
+      </entry>
+      <entry value="5" name="AMB_STATE_EMERGENCYSTOP">
+        <description>System is in emergency stop, it may be cased by .</description>
+      </entry>
+      <entry value="6" name="AMB_STATE_ERROR">
+        <description>System is in error mode.</description>
+      </entry>
+    </enum>
+    <!-- robot system sensor status -->
+    <enum name="AMB_SYS_STATUS_SENSOR" bitmask="true">
+      <description>These encode the sensors whose status is sent as part of the SYS_CORE_STATUS message.</description>
+      <entry value="1" name="AMB_SYS_STATUS_SENSOR_3D_GYRO">
+        <description>0x01 3D gyro</description>
+      </entry>
+      <entry value="2" name="AMB_SYS_STATUS_SENSOR_3D_ACCEL">
+        <description>0x02 3D accelerometer</description>
+      </entry>
+      <entry value="4" name="AMB_SYS_STATUS_SENSOR_3D_MAG">
+        <description>0x04 3D magnetometer</description>
+      </entry>
+      <entry value="8" name="MAV_SYS_STATUS_SENSOR_ULTRASONIC">
+        <description>0x08 ultrasonic array</description>
+      </entry>
+      <entry value="16" name="MAV_SYS_STATUS_SENSOR_INFRARED">
+        <description>0x10 infrared array</description>
+      </entry>
+      <entry value="32" name="MAV_SYS_STATUS_SENSOR_PM25">
+        <description>0x20 PM2.5 sensor</description>
+      </entry>
+      <entry value="64" name="MAV_SYS_STATUS_SENSOR_TEMPERATURE_HUMIDITY">
+        <description>0x40 temperature and humidity sensor</description>
+      </entry>
+      <entry value="128" name="MAV_SYS_STATUS_SENSOR_CARBON">
+        <description>0x80 carbon dioxide sensor</description>
+      </entry>
+      <entry value="256" name="MAV_SYS_STATUS_SENSOR_TOTAL_VOC">
+        <description>0x100 laser based total VOC sensor</description>
+      </entry>
+      <entry value="512" name="MAV_SYS_STATUS_SENSOR_GRID_EYE">
+        <description>0x200 panasonic infrared array sensor (grid eye)</description>
+      </entry>
+    </enum>
+    <!-- robot parameter type -->
+    <enum name="AMB_PARAM_TYPE">
+      <description>Specifies the datatype of a MAVLink parameter.</description>
+      <entry value="1" name="AMB_PARAM_TYPE_UINT8">
+        <description>8-bit unsigned integer</description>
+      </entry>
+      <entry value="2" name="AMB_PARAM_TYPE_INT8">
+        <description>8-bit signed integer</description>
+      </entry>
+      <entry value="3" name="AMB_PARAM_TYPE_UINT16">
+        <description>16-bit unsigned integer</description>
+      </entry>
+      <entry value="4" name="AMB_PARAM_TYPE_INT16">
+        <description>16-bit signed integer</description>
+      </entry>
+      <entry value="5" name="AMB_PARAM_TYPE_UINT32">
+        <description>32-bit unsigned integer</description>
+      </entry>
+      <entry value="6" name="AMB_PARAM_TYPE_INT32">
+        <description>32-bit signed integer</description>
+      </entry>
+      <entry value="7" name="AMB_PARAM_TYPE_UINT64">
+        <description>64-bit unsigned integer</description>
+      </entry>
+      <entry value="8" name="AMB_PARAM_TYPE_INT64">
+        <description>64-bit signed integer</description>
+      </entry>
+      <entry value="9" name="AMB_PARAM_TYPE_REAL32">
+        <description>32-bit floating-point</description>
+      </entry>
+      <entry value="10" name="AMB_PARAM_TYPE_REAL64">
+        <description>64-bit floating-point</description>
+      </entry>
+    </enum>
+    <!-- The AMB_CMD enum entries describe either: -->
+    <!--  * the data payload of mission items (as used in the MISSION_ITEM and MISSION_ITEM_INT messages) -->
+    <!--  * the data payload of mavlink commands (as used in the COMMAND_LONG messages) -->
+    <!-- ALL the entries in the AMB_CMD enum have a maximum of 7 parameters -->
+    <enum name="AMB_CMD">
+      <description>Commands to be executed by the AMB. They can be executed on user request, or as part of a mission script.</description>
+      <entry value="1" name="AMB_CMD_MODE_CTL">
+        <description>Control the vehicle mode.</description>
+        <param index="1" label="Mode" enum="AMB_MODE_FLAG">Setting mode for the robot.</param>
+        <param index="2">Empty</param>
+        <param index="3">Empty</param>
+        <param index="4">Empty</param>
+        <param index="5">Empty</param>
+        <param index="6">Empty</param>
+        <param index="7">Empty</param>
+      </entry>
+      <entry value="2" name="AMB_CMD_VELOCITY_CTL">
+        <description>Setting the vehicle moving speed. This entry is valid only in AMB_MODE_FLAG_SPEED_MODE_ENABLED mode.</description>
+        <param index="1" label="Vx" units="m/s">Linear speed in X direction</param>
+        <param index="2" label="Vy" units="m/s">Linear speed in Y direction</param>
+        <param index="3" label="Vz" units="m/s">Linear speed in Z direction</param>
+        <param index="4" label="Wx" units="rad/s">Angular speed in X direction</param>
+        <param index="5" label="Wy" units="rad/s">Angular speed in Y direction</param>
+        <param index="6" label="Wz" units="rad/s">Angular speed in Z direction</param>
+        <param index="7">Empty</param>
+      </entry>
+      <entry value="3" name="AMB_CMD_TORQUE_CTL">
+        <description>Setting the vehicle moving torque. This entry is valid only in AMB_MODE_FLAG_TORQUE_MODE_ENABLED mode.</description>
+        <param index="1" label="Joint One" units="Nm">Joint one torque</param>
+        <param index="2" label="Joint Two" units="Nm">Joint two torque</param>
+        <param index="3" label="Joint Three" units="Nm">Joint three torque</param>
+        <param index="4" label="Joint Four" units="Nm">Joint four torque</param>
+        <param index="5" label="Joint Five" units="Nm">Joint five torque</param>
+        <param index="6" label="Joint Six" units="Nm">Joint six torque</param>
+        <param index="7">Empty</param>
+      </entry>
+      <entry value="4" name="AMB_CMD_ACCELERATION_CTL">
+        <description>Setting the vehicle moving acceleration ratio.  Value range:[0, 65535].</description>
+        <param index="1" label="Acceleration" minValue="0" maxValue="65535">Acceleration for all joint</param>
+        <param index="2">Empty</param>
+        <param index="3">Empty</param>
+        <param index="4">Empty</param>
+        <param index="5">Empty</param>
+        <param index="6">Empty</param>
+        <param index="7">Empty</param>
+      </entry>
+      <entry value="5" name="AMB_CMD_GPIO_OUTPUT_CTL">
+        <description>Setting the vehicle onboard GPIO output.</description>
+        <param index="1" label="Bit Mapping">GPIO bit mapping</param>
+        <param index="2">Empty</param>
+        <param index="3">Empty</param>
+        <param index="4">Empty</param>
+        <param index="5">Empty</param>
+        <param index="6">Empty</param>
+        <param index="7">Empty</param>
+      </entry>
+      <entry value="6" name="AMB_CMD_ANALOG_OUTPUT_CTL">
+        <description>Setting the vehicle onboard analog output.</description>
+        <param index="1" label="Channel One" units="V" minValue="-24" maxValue="24">Analog output channel one</param>
+        <param index="2" label="Channel Two" units="V" minValue="-24" maxValue="24">Analog output channel two</param>
+        <param index="3" label="Channel Three" units="V" minValue="-24" maxValue="24">Analog output channel three</param>
+        <param index="4" label="Channel Four" units="V" minValue="-24" maxValue="24">Analog output channel four</param>
+        <param index="5" label="Channel Five" units="V" minValue="-24" maxValue="24">Analog output channel five</param>
+        <param index="6" label="Channel Six" units="V" minValue="-24" maxValue="24">Analog output channel six</param>
+        <param index="7" label="Channel Seven" units="V" minValue="-24" maxValue="24">Analog output channel seven</param>
+      </entry>
+    </enum>
+
+  </enums>
+
+  <!-- ========================================================= -->
+  <!-- messages -->
+  <!-- ========================================================= -->
+  <messages>
+    <!--========= heartbeat protocol ========-->
+    <!-- heartbeat message -->
+    <message id = "0" name="HEARTBEAT">
+      <description>The heartbeat message shows that a robot is present and responding. The type indicate that the robot type.</description>
+      <field type="uint8_t" name="type" enum="AMB_TYPE">Autonomous mobile type. for a robot, like differential mobile robot, omnidirectional mobile robot, ackerman mobile robot etc...</field>
+      <field type="uint8_t" name="base_mode" enum="AMB_MODE_FLAG" display="bitmask">System mode bitmap.</field>
+      <field type="uint8_t" name="system_status" enum="AMB_STATE">System status flag.</field>
+      <field type="uint32_t" name="error_code">System error code flags</field>
+      <field type="uint8_t_mavlink_version" name="mavlink_version">MAVLink version, not writable by user, gets added by protocol because of magic data type: uint8_t_mavlink_version</field>
+    </message>
+    <!--========= ping protocol ========-->
+    <!-- ping message -->
+    <message id="2" name="PING">
+      <description>A ping message either requesting or responding to a ping. This allows to measure the system latencies, including serial port, radio modem and UDP connections. The ping microservice is documented at https://mavlink.io/en/services/ping.html</description>
+      <field type="uint64_t" name="time_usec" units="us">Timestamp (UNIX Epoch time or time since system boot). The receiving end can infer timestamp format (since 1.1.1970 or since system boot) by checking for the magnitude of the number.</field>
+      <field type="uint32_t" name="seq">PING sequence</field>
+      <field type="uint8_t" name="target_system">0: request ping from all receiving systems. If greater than 0: message is a ping response and number is the system id of the requesting system</field>
+    </message>
+    <!--========= parameter protocol ========-->
+    <!-- parameter request read message -->
+    <message id="20" name="PARAM_REQUEST_READ">
+      <description>Request to read the onboard parameter with the param_id string id. Onboard parameters are stored as key[const char*] -&gt; value[float]. This allows to send a parameter to any other component without the need of previous knowledge of possible parameter names.</description>
+      <field type="uint8_t" name="target_system">System ID</field>
+      <field type="char[16]" name="param_id">Onboard parameter id, terminated by NULL if the length is less than 16 human-readable chars and WITHOUT null termination (NULL) byte if the length is exactly 16 chars - applications have to provide 16+1 bytes storage if the ID is stored as string</field>
+      <field type="int16_t" name="param_index">Parameter index. Send -1 to use the param ID field as identifier (else the param id will be ignored)</field>
+    </message>
+    <message id="21" name="PARAM_REQUEST_LIST">
+      <description>Request all parameters of this component. After this request, all parameters are emitted.</description>
+      <field type="uint8_t" name="target_system">System ID</field>
+    </message>
+    <message id="22" name="PARAM_VALUE">
+      <description>Emit the value of a onboard parameter. The inclusion of param_count and param_index in the message allows the recipient to keep track of received parameters and allows him to re-request missing parameters after a loss or timeout.</description>
+      <field type="char[16]" name="param_id">Onboard parameter id, terminated by NULL if the length is less than 16 human-readable chars and WITHOUT null termination (NULL) byte if the length is exactly 16 chars - applications have to provide 16+1 bytes storage if the ID is stored as string</field>
+      <field type="float" name="param_value">Onboard parameter value</field>
+      <field type="uint8_t" name="param_type" enum="MAV_PARAM_TYPE">Onboard parameter type.</field>
+      <field type="uint16_t" name="param_count">Total number of onboard parameters</field>
+      <field type="uint16_t" name="param_index">Index of this onboard parameter</field>
+    </message>
+    <message id="23" name="PARAM_SET">
+      <description>Set a parameter value (write new value to permanent storage). IMPORTANT: The receiving component should acknowledge the new parameter value by sending a PARAM_VALUE message to all communication partners. This will also ensure that multiple GCS all have an up-to-date list of all parameters. If the sending GCS did not receive a PARAM_VALUE message within its timeout time, it should re-send the PARAM_SET message. The parameter microservice is documented at https://mavlink.io/en/services/parameter.html</description>
+      <field type="uint8_t" name="target_system">System ID</field>
+      <field type="char[16]" name="param_id">Onboard parameter id, terminated by NULL if the length is less than 16 human-readable chars and WITHOUT null termination (NULL) byte if the length is exactly 16 chars - applications have to provide 16+1 bytes storage if the ID is stored as string</field>
+      <field type="float" name="param_value">Onboard parameter value</field>
+      <field type="uint8_t" name="param_type" enum="AMB_PARAM_TYPE">Onboard parameter type.</field>
+    </message>
+    <!--========= command protocol ========-->
+    <message id="30" name="COMMAND_LONG">
+      <description>Send a command with up to seven parameters to the AMB.</description>
+      <field type="uint8_t" name="target_system">System which should execute the command</field>
+      <field type="uint16_t" name="command" enum="AMB_CMD">Command ID (of command to send).</field>
+      <field type="uint8_t" name="confirm">0: the system do not send confirmation. 1-255: the system must send back the confirmation.</field>
+      <field type="float" name="param1">Parameter 1 (for the specific command).</field>
+      <field type="float" name="param2">Parameter 2 (for the specific command).</field>
+      <field type="float" name="param3">Parameter 3 (for the specific command).</field>
+      <field type="float" name="param4">Parameter 4 (for the specific command).</field>
+      <field type="float" name="param5">Parameter 5 (for the specific command).</field>
+      <field type="float" name="param6">Parameter 6 (for the specific command).</field>
+      <field type="float" name="param7">Parameter 7 (for the specific command).</field>
+    </message>
+    <message id="31" name="COMMAND_ACK">
+      <description>Report status of a command. Feedback relay on the COMMAND_LONG message "confirm" tag.</description>
+      <field type="uint16_t" name="command" enum="AMB_CMD">Command ID (of acknowledged command).</field>
+      <field type="uint8_t" name="result" enum="AMB_RESULT">Result of command.</field>
+    </message>
+    <!--========= system data protocol ========-->
+    <!-- system core status message -->
+    <message id="50" name="SYS_CORE_STATUS">
+      <description>The general system core status. including the system sensor state, running states and battery infomation, temperature, humidity, etc...</description>
+      <field type="uint32_t" name="time_boot_ms" units="ms">Timestamp (time since system boot).</field>
+      <field type="uint32_t" name="onboard_control_sensors_health" enum="AMB_SYS_STATUS_SENSOR" display="bitmask">Bitmap showing which onboard sensors have an error (or are operational). Value of 0: error. Value of 1: healthy.</field>
+      <field type="uint16_t" name="load" units="d%">Maximum usage in percent of the mainloop time. Values: [0-1000] - should always be below 1000</field>
+      <field type="uint16_t" name="voltage_battery" units="mV">Battery voltage, UINT16_MAX: Voltage not sent by robot</field>
+      <field type="int16_t" name="current_battery" units="mA">Battery current, -1: Current not sent by autopilot</field>
+      <field type="int8_t" name="battery_remaining" units="%">Battery energy remaining, Values: [0-100]%, -1: Battery remaining energy not sent by robot</field>
+    </message>
+    <!-- system information version message -->
+    <message id="51" name="SYS_INFO_VERSION">
+      <description>The hardware version, software version, UIUD of the system</description>
+      <field type="uint32_t" name="hardware_ver">System hardware version.</field>
+      <field type="uint32_t" name="software_ver">System software version.</field>
+      <field type="uint32_t" name="uiud">System UIUD data</field>
+    </message>
+    <!-- system IMU data message -->
+    <message id="52" name="SCALED_IMU">
+      <description>The RAW IMU readings for the usual 9DOF sensor setup. This message should contain the scaled values to the described units</description>
+      <field type="uint32_t" name="time_boot_ms" units="ms">Timestamp (time since system boot).</field>
+      <field type="int16_t" name="xacc" units="mG">X acceleration</field>
+      <field type="int16_t" name="yacc" units="mG">Y acceleration</field>
+      <field type="int16_t" name="zacc" units="mG">Z acceleration</field>
+      <field type="int16_t" name="xgyro" units="mrad/s">Angular speed around X axis</field>
+      <field type="int16_t" name="ygyro" units="mrad/s">Angular speed around Y axis</field>
+      <field type="int16_t" name="zgyro" units="mrad/s">Angular speed around Z axis</field>
+      <field type="int16_t" name="xmag" units="mgauss">X Magnetic field</field>
+      <field type="int16_t" name="ymag" units="mgauss">Y Magnetic field</field>
+      <field type="int16_t" name="zmag" units="mgauss">Z Magnetic field</field>
+      <extensions/>
+      <field type="int16_t" name="temperature" units="cdegC">Temperature, 0: IMU does not provide temperature values. If the IMU is at 0C it must send 1 (0.01C).</field>
+    </message>
+    <!-- vehicle attitude data message -->
+    <message id="53" name="ATTITUDE">
+      <description>The attitude of the vehicle (right-handed, Z-down, X-front, Y-right).</description>
+      <field type="uint32_t" name="time_boot_ms" units="ms">Timestamp (time since system boot).</field>
+      <field type="float" name="roll" units="rad">Roll angle (-pi..+pi)</field>
+      <field type="float" name="pitch" units="rad">Pitch angle (-pi..+pi)</field>
+      <field type="float" name="yaw" units="rad">Yaw angle (-pi..+pi)</field>
+      <field type="float" name="rollspeed" units="rad/s">Roll angular speed</field>
+      <field type="float" name="pitchspeed" units="rad/s">Pitch angular speed</field>
+      <field type="float" name="yawspeed" units="rad/s">Yaw angular speed</field>
+    </message>
+    <!-- vehicle twist data message -->
+    <message id="54" name="TWIST">
+      <description>The twist data of the vehicle (right-handed, Z-down, X-front, Y-right).</description>
+      <field type="uint32_t" name="time_boot_ms" units="ms">Timestamp (time since system boot).</field>
+      <field type="float" name="Vx" units="m/s">X axis speed</field>
+      <field type="float" name="Vy" units="m/s">Y axis speed</field>
+      <field type="float" name="Vz" units="m/s">Z axis speed</field>
+      <field type="float" name="Wx" units="rad/s">Roll angular speed</field>
+      <field type="float" name="Wy" units="rad/s">Pitch angular speed</field>
+      <field type="float" name="Wz" units="rad/s">Yaw angular speed</field>
+    </message>
+    <!-- system joint torque data message -->
+    <message id="55" name="TORQUE">
+      <description>The torque data of the vehicle joint.</description>
+      <field type="uint32_t" name="time_boot_ms" units="ms">Timestamp (time since system boot).</field>
+      <field type="float" name="J1" units="Nm">Joint One torque</field>
+      <field type="float" name="J2" units="Nm">Joint two torque</field>
+      <field type="float" name="J3" units="Nm">Joint three torque</field>
+      <field type="float" name="J4" units="Nm">Joint four torque</field>
+      <field type="float" name="J5" units="Nm">Joint five torque</field>
+      <field type="float" name="J6" units="Nm">Joint six torque</field>
+      <field type="float" name="J7" units="Nm">Joint seven torque</field>
+    </message>
+    <!-- system GPIO data message -->
+    <message id="56" name="GPIO">
+      <description>The GPIO data of the system board.</description>
+      <field type="uint32_t" name="time_boot_ms" units="ms">Timestamp (time since system boot).</field>
+      <field type="uint32_t" name="Input">GPIO input value bit mapping</field>
+      <field type="uint32_t" name="Output">GPIO output value bit mapping</field>
+    </message>
+    <!-- system analog data message -->
+    <message id="57" name="ANALOG">
+      <description>The analog data of the vehicle online board.</description>
+      <field type="uint32_t" name="time_boot_ms" units="ms">Timestamp (time since system boot).</field>
+      <field type="float[7]" name="Input" units="v">Input channel analog value</field>
+      <field type="float[7]" name="Output" units="v">Output channel analog value</field>
+    </message>
+
+  </messages>
+</mavlink>

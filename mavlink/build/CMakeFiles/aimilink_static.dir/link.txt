@@ -1,0 +1,2 @@
+/usr/bin/ar qc lib/libaimilink.a  CMakeFiles/aimilink_static.dir/src/linux_serial.cpp.o CMakeFiles/aimilink_static.dir/src/mavlink_interface.cpp.o
+/usr/bin/ranlib lib/libaimilink.a
